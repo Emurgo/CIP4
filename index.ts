@@ -1,4 +1,3 @@
-import blakejs from 'blakejs';
 import blake2b from 'blake2b';
 import crc32 from 'buffer-crc32';
 import fnv1a from '@sindresorhus/fnv1a';

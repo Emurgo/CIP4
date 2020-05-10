@@ -1,15 +1,16 @@
 {
   "name": "@emurgo/cip4-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Javascript library reference implementation for CIP4",
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc && npm run flowgen",
+    "build": "npm run clean && tsc && npm run flowgen && npm run copy-misc",
     "clean": "rm -rf ./dist/",
+    "copy-misc": "cp package.json dist/ && cp README.md dist/",
     "eslint": "eslint ./index.ts ./tests/index.test.ts",
     "flowgen": "flowgen ./dist/index.d.ts --no-inexact --add-flow-header -o dist/index.flow.js",
-    "npm-publish": "npm run verify && npm run build && npm publish --access public",
+    "npm-publish": "npm run verify && npm run build && cd dist && npm publish --access public && cd ..",
     "test": "tsc --noEmit && jest",
     "verify": "npm run eslint && npm run test"
   },
@@ -22,9 +23,6 @@
     "type": "git",
     "url": "git+https://github.com/Emurgo/CIP4.git"
   },
-  "files": [
-    "dist"
-  ],
   "author": "EMURGO",
   "homepage": "https://github.com/Emurgo/CIP4#readme",
   "dependencies": {

@@ -1,10 +1,6 @@
 import { legacyWalletChecksum, walletChecksum } from '../index';
-import blake2b from 'blake2b';
 
-test('Restore wallet', () => {
-  var output = new Uint8Array(64)
-  var input = Buffer.from('hello world')
-
+test('Checksum is correctly generated', () => {
   // 'eight country switch draw meat scout mystery blade tip drift useless good keep usage title'
   {
     const byronChecksum = legacyWalletChecksum(

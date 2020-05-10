@@ -3,14 +3,14 @@ import crc32 from 'buffer-crc32';
 import fnv1a from '@sindresorhus/fnv1a';
 
 export type WalletChecksum = {
-  ImagePart: string,
-  TextPart: string,
+  ImagePart: string;
+  TextPart: string;
 };
 
-export function legacyWalletChecksum(publicKeyHash: string /* note: lowercase hex representation */) {
+export function legacyWalletChecksum(publicKeyHash: string /* note: lowercase hex representation */): WalletChecksum {
   // ImagePart
-  const output = new Uint8Array(64)
-  const input = Buffer.from(publicKeyHash)
+  const output = new Uint8Array(64);
+  const input = Buffer.from(publicKeyHash);
   const ImagePart = blake2b(output.length).update(input).digest('hex');
 
   // TextPart
@@ -27,15 +27,15 @@ function toBytesInt32(int32: number): [number, number, number, number] {
   const byteArray: [number, number, number, number] = [0, 0, 0, 0];
 
   for (let index = 0; index < byteArray.length; index ++ ) {
-      const byte = int32 & 0xff;
-      byteArray [ index ] = byte;
-      int32 = (int32 - byte) / 256 ;
+    const byte = int32 & 0xff;
+    byteArray [ index ] = byte;
+    int32 = (int32 - byte) / 256 ;
   }
 
   return byteArray;
 }
 
-export function walletChecksum(publicKeyHash: string /* note: lowercase hex representation */) {
+export function walletChecksum(publicKeyHash: string /* note: lowercase hex representation */): WalletChecksum {
   // ImagePart
   const output = new Uint8Array(64)
   const input = Buffer.from(publicKeyHash)

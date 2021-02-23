@@ -1,6 +1,6 @@
 import blake2b from 'blake2b';
 import crc32 from 'buffer-crc32';
-import fnv1a from '@sindresorhus/fnv1a';
+import { fast1a32 } from 'fnv-plus';
 
 export type WalletChecksum = {
   ImagePart: string;
@@ -47,7 +47,7 @@ export function walletChecksum(publicKeyHash: string /* note: lowercase hex repr
   ).update(input).digest('hex');
 
   // TextPart
-  const [a, b, c, d] = toBytesInt32(fnv1a(ImagePart));
+  const [a, b, c, d] = toBytesInt32(fast1a32(ImagePart));
   const alpha = `ABCDEJHKLNOPSTXZ`;
   const letters = (x: number): string => `${alpha[Math.floor(x / 16)]}${alpha[x % 16]}`;
   const numbers = `${((c << 8) + d) % 10000}`.padStart(4, '0');

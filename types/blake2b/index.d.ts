@@ -4,11 +4,11 @@ declare class Blake2b {
   digest(out: "binary" | Uint8Array): Uint8Array
 }
 type Ctx = {
-  b: Uint8Array,
-  h: Uint32Array,
-  t: number, // input count
-  c: number, // pointer within buffer
-  outlen: number // output length in bytes
+  b: Uint8Array;
+  h: Uint32Array;
+  t: number; // input count
+  c: number; // pointer within buffer
+  outlen: number; // output length in bytes
 };
 
 declare module 'blake2b' {

@@ -1,0 +1,30 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+    timezone: PST8PDT
+  open-pull-requests-limit: 99
+  ignore:
+  - dependency-name: husky
+    versions:
+    - 4.3.6
+    - 4.3.8
+  - dependency-name: eslint
+    versions:
+    - 7.16.0
+    - 7.19.0
+  - dependency-name: "@types/jest"
+    versions:
+    - 26.0.19
+  - dependency-name: flowgen
+    versions:
+    - 1.12.1
+  - dependency-name: typescript
+    versions:
+    - 3.9.7
+  - dependency-name: "@sindresorhus/fnv1a"
+    versions:
+    - 2.0.1
+  rebase-strategy: disabled

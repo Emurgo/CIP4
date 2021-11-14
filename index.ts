@@ -1,11 +1,19 @@
 import blake2b from 'blake2b';
 import crc32 from 'buffer-crc32';
-import { fast1a32 } from 'fnv-plus';
+import {fast1a32} from 'fnv-plus';
 
 export type WalletChecksum = {
   ImagePart: string;
   TextPart: string;
 };
+
+const ALPHA = `ABCDEJHKLNOPSTXZ`;
+
+function textPartFromBytes([a, b, c, d]: [number, number, number, number]): string {
+  const letters = (x: number): string => `${ALPHA[Math.floor(x / 16)]}${ALPHA[x % 16]}`;
+  const numbers = `${((c << 8) + d) % 10000}`.padStart(4, '0');
+  return `${letters(a)}${letters(b)}-${numbers}`;
+}
 
 export function legacyWalletChecksum(publicKeyHash: string /* note: lowercase hex representation */): WalletChecksum {
   // ImagePart
@@ -15,10 +23,7 @@ export function legacyWalletChecksum(publicKeyHash: string /* note: lowercase he
 
   // TextPart
   const [a, b, c, d] = crc32(ImagePart);
-  const alpha = `ABCDEJHKLNOPSTXZ`;
-  const letters = (x: number): string => `${alpha[Math.floor(x / 16)]}${alpha[x % 16]}`;
-  const numbers = `${((c << 8) + d) % 10000}`.padStart(4, '0');
-  const TextPart = `${letters(a)}${letters(b)}-${numbers}`;
+  const TextPart = textPartFromBytes([a, b, c, d]);
 
   return { ImagePart, TextPart };
 }
@@ -35,6 +40,10 @@ function toBytesInt32(int32: number): [number, number, number, number] {
   return byteArray;
 }
 
+export function textPartFromWalletChecksumImagePart(walletChecksum: string): string {
+  return textPartFromBytes(toBytesInt32(fast1a32(walletChecksum)))
+}
+
 export function walletChecksum(publicKeyHash: string /* note: lowercase hex representation */): WalletChecksum {
   // ImagePart
   const output = new Uint8Array(64)
@@ -47,11 +56,6 @@ export function walletChecksum(publicKeyHash: string /* note: lowercase hex repr
   ).update(input).digest('hex');
 
   // TextPart
-  const [a, b, c, d] = toBytesInt32(fast1a32(ImagePart));
-  const alpha = `ABCDEJHKLNOPSTXZ`;
-  const letters = (x: number): string => `${alpha[Math.floor(x / 16)]}${alpha[x % 16]}`;
-  const numbers = `${((c << 8) + d) % 10000}`.padStart(4, '0');
-  const TextPart = `${letters(a)}${letters(b)}-${numbers}`;
-
+  const TextPart = textPartFromWalletChecksumImagePart(ImagePart);
   return { ImagePart, TextPart };
 }

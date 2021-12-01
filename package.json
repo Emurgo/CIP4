@@ -27,7 +27,7 @@
   "author": "EMURGO",
   "homepage": "https://github.com/Emurgo/CIP4#readme",
   "dependencies": {
-    "blake2b": "2.1.3",
+    "blake2b": "2.1.4",
     "buffer-crc32": "0.2.13",
     "fnv-plus": "1.3.1"
   },

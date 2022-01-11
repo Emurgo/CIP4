@@ -44,17 +44,39 @@ export function textPartFromWalletChecksumImagePart(walletChecksum: string): str
   return textPartFromBytes(toBytesInt32(fast1a32(walletChecksum)))
 }
 
+function hash(len: number, inp: string, msg: string): string {
+  return blake2b(
+    len,
+    undefined,
+    undefined,
+    Buffer.from(msg) // personal
+  ).update(Buffer.from(inp)).digest('hex');
+}
+
+export function hash44(s: string): string {
+  const shortHash = hash(33, s, 'shorten checksum');
+  const buff1 = Array.from(Buffer.from(shortHash, 'hex').toString('base64'));
+  const requiredReplacementPositions = buff1
+    .map((c, i) => c === '+' || c === '/' ? i : -1)
+    .filter(i => i >= 0);
+  const reverse = s.split('').reverse().join('');
+  for (let i = 0; i < 100; i++) {
+    const shortHash2 = hash(39, `${reverse}${i}`, 'shorten checksum');
+    const buff2 = Array.from(Buffer.from(shortHash2, 'hex').toString('base64'));
+    const availableReplacements = buff2.filter(c => c !== '+' && c !== '/');
+    if (availableReplacements.length >= requiredReplacementPositions.length) {
+      requiredReplacementPositions.forEach((position, i) => {
+        buff1[position] = availableReplacements[i];
+      });
+      return buff1.join('');
+    }
+  }
+  return buff1.map(c => c === '+' ? 'a' : (c === '/' ? 'b' : c)).join('');
+}
+
 export function walletChecksum(publicKeyHash: string /* note: lowercase hex representation */): WalletChecksum {
   // ImagePart
-  const output = new Uint8Array(64)
-  const input = Buffer.from(publicKeyHash)
-  const ImagePart = blake2b(
-    output.length,
-    undefined,
-    undefined,
-    Buffer.from('wallets checksum') // personal
-  ).update(input).digest('hex');
-
+  const ImagePart = hash(64, publicKeyHash, 'wallets checksum');
   // TextPart
   const TextPart = textPartFromWalletChecksumImagePart(ImagePart);
   return { ImagePart, TextPart };
